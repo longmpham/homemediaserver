@@ -30,7 +30,7 @@ The following services are used to create the HTPC. It uses Plex (or Jellyfin) a
 #### Create Folder and Files
 Create directories like so (best practice according to community)
 - ${ROOT_DIR}/config
-- ${ROOT_DIR}/data/{torrents,media/{books,movies,music,tvshows,<other>},<other>}
+- ${ROOT_DIR}/data/{torrents,media/{books,movies,music,tvshows,(other)},(other)}
 - ROOT_DIR is set in the .env file. The following folder structure will look like the following:`${ROOT_DIR}`
 -- /todo: create a python script to automate creating folders in a ROOT_DIR
 ROOT_DIR
@@ -42,7 +42,7 @@ ROOT_DIR
         ├── movies
         ├── music
         ├── tvshows
-        └── <other>
+        └── (other)
 
 1. In ${ROOT_DIR}/config, create ".env" and "docker-compose.yml" files. 
 - These have been attached already.
@@ -81,8 +81,8 @@ no errors
 
 ...
 ...
-Connecting to United States #<redactacted> (us<redactacted>.nordvpn.com)
-You are connected to United States #<redactacted> (us<redactacted>.nordvpn.com)!
+Connecting to United States #(redactacted) (us(redactacted).nordvpn.com)
+You are connected to United States #(redactacted) (us(redactacted).nordvpn.com)!
 ############################################################
 vpn  | __  .___  ___. .______     ______   .______     .___________.    ___      .__   __. .___________.
 vpn  | |  | |   \/   | |   _  \   /  __  \  |   _  \    |           |   /   \     |  \ |  | |           |
@@ -92,8 +92,8 @@ vpn  | |  | |  |  |  | |  |      |  `--'  | |  |\  \----.   |  |     /  _____  \
 vpn  | |__| |__|  |__| | _|       \______/  | _| `._____|   |__|    /__/     \__\ |__| \__|     |__|
 vpn  | ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 vpn  | Please migrate to the NordLynx container (https://github.com/bubuntux/nordlynx)
-vpn  | Here is your private Key: <REDACTED>
-vpn  | IP: <REDACTED>
+vpn  | Here is your private Key: (REDACTED)
+vpn  | IP: (REDACTED)
 vpn  | ############################################################
 ...
 ...
@@ -101,18 +101,18 @@ vpn  | ############################################################
 #### Check Your Containers
 1. Open an Internet browser (Firefox, Chrome, etc.)
 2. Go to nordvpn.com to verify you're 'protected' using your VPN
-3. Go to "<IP of the machine>:8080" to verify QBitTorrent is working
-4. Go to "<IP of the machine>:9696" to verify Prowlarr is working
-5. Go to "<IP of the machine>:8989" to verify Sonarr is working
-6. Go to "<IP of the machine>:7878" to verify Radarr is working
-7. Go to "<IP of the machine>:8787" to verify Readarr is working
-8. Go to "<IP of the machine>:8686" to verify Lidarr is working
-9. Go to "<IP of the machine>:6767" to verify Bazarr is working
-10. Go to "<IP of the machine>:5055" to verify Overseerr is working
-11. Go to "<IP of the machine>:4545" to verify Requestrr is working
-12. Go to "<IP of the machine>:32400" to verify Jellyfin is working
-13. Go to "<IP of the machine>:32400" to verify Plex is working
-14. Go to "<IP of the machine>:8181" to verify Tautulli is working
+3. Go to "(IP)of the machine>:8080" to verify QBitTorrent is working
+4. Go to "(IP)of the machine>:9696" to verify Prowlarr is working
+5. Go to "(IP)of the machine>:8989" to verify Sonarr is working
+6. Go to "(IP)of the machine>:7878" to verify Radarr is working
+7. Go to "(IP)of the machine>:8787" to verify Readarr is working
+8. Go to "(IP)of the machine>:8686" to verify Lidarr is working
+9. Go to "(IP)of the machine>:6767" to verify Bazarr is working
+10. Go to "(IP)of the machine>:5055" to verify Overseerr is working
+11. Go to "(IP)of the machine>:4545" to verify Requestrr is working
+12. Go to "(IP)of the machine>:32400" to verify Jellyfin is working
+13. Go to "(IP)of the machine>:32400" to verify Plex is working
+14. Go to "(IP)of the machine>:8181" to verify Tautulli is working
 
 #### Configuring Containers
 ##### Prowlarr
@@ -124,7 +124,7 @@ vpn  | ############################################################
 - kickasstorrents
 3. Go to Settings > Apps and add some applications (ServaRR apps!).
 - Sonarr, Radarr, Lidarr, etc.
--- Use http://<host_name>:<port> instead of http://localhost:<port>
+-- Use http://(host_name):(port) instead of http://localhost:(port)
 -- Grab the API key from their respective applications under Settings > General > API_KEY
 -- Recommend to do 1 at a time so there is no confusion in the steps. Fortunately, after the first one, the rest are similar in steps.
 ##### Radarr
@@ -136,14 +136,14 @@ vpn  | ############################################################
 5. Go to Settings > Download Clients
 6. Add QBitTorrent to the list
 - Name: QBitTorrent
-- host: <ip_of_machine>
+- host: (ip_of_machine)
 - port: 8080 (this is your `WEB_PORT` set in the docker compose)
 - user: admin (default)
 - pw: adminadmin (default)
 7. Add a Remote Path Mappings 
-- host: <ip_of_machine>
-- remote path: <path of downloads from QBitTorrent> (ie. /downloads)
-- local path: <path of data set from local server (ie. host's system and not the container's system)> (ie. /data/downloads/movies)
+- host: (ip_of_machine)
+- remote path: (path)of downloads from QBitTorrent> (ie. /downloads)
+- local path: (path)of data set from local server (ie. host's system and not the container's system)> (ie. /data/downloads/movies)
 -- this is here Radarr saves the downloads from QBittorrent
 - Recommend to follow paths above to keep this simple as well.
 8. Verify all settings are correct, and check under Systems tab that there are no issues that Radarr can identify. The events tab should be enough to give you an idea of what can go wrong.
@@ -189,7 +189,7 @@ Follow the instructions here: https://github.com/darkalfx/requestrr/wiki
 11. Verify the bot was added in your server.
 12. In Requestrr, under Movies/TV Shows, configure where the requests go. Recommend to use Overseerr as the hub to request to Radarr and Sonarr. 
 13. To configure Overseerr as the Download Client, grab the API key from Overseer > Settings > General > API_KEY and and paste it back in Requestrr. 
-14. Add the <IP of Overseer> and <Port of Overseerr>
+14. Add the (IP)of Overseer> and (Port)of Overseerr>
 15. (Optional) Create a Default Overseerr user to flow all requests to that user (ie. Requester_User)
 16. Test settings and finally save everything. 
 17. Create a category for your movies and/or tv shows. Recommended to restrict requests for small servers.  
@@ -229,11 +229,11 @@ Follow the instructions here: https://github.com/darkalfx/requestrr/wiki
 - nameserver 8.8.8.8 (or 1.1.1.1)
 - comment out the old nameserver (ie. # nameserver 127.0.0.53)
 11. Restart the pihole docker container.
-12. Log in to your web UI by going to either http://pi.hole/admin (if local) or http://<ip_of_pihole>:8001/admin. In my case, it was htpp://192.168.50.58:8001/admin. Once there, login using your WEBPASSWORD you created from earlier
+12. Log in to your web UI by going to either http://pi.hole/admin (if local) or http://(ip_of_pihole):8001/admin. In my case, it was htpp://192.168.50.58:8001/admin. Once there, login using your WEBPASSWORD you created from earlier
 13. Pihole is up and running. Now let's connect it to your router for network-wide ad blocking or as per-device.
-14. Go to your Router settings. I am using an Asus Router, so I would go to http://router.asus.com and login. Once logged in, I would go to WAN > Internet Connection and under WAN DNS Settings, I would change the DNS Server1 to <ip_of_pihole>. 
+14. Go to your Router settings. I am using an Asus Router, so I would go to http://router.asus.com and login. Once logged in, I would go to WAN > Internet Connection and under WAN DNS Settings, I would change the DNS Server1 to (ip_of_pihole). 
 - https://www.asus.com/support/FAQ/1046062/
 - For other routers, it should be the same. Just google "pihole your_router dns settings" and it should quickly come up. 
 - You may want to backup your old router configuration in case you mess anything up.
-15. (Optional): Set up your device's DNS server in connection settings. For the DNS Server, it is the <ip_of_pihole> once again.
+15. (Optional): Set up your device's DNS server in connection settings. For the DNS Server, it is the (ip_of_pihole) once again.
 - If you did this network-wide, you should be fine to skip this.
