@@ -1,0 +1,358 @@
+version: "4.0"
+
+services:
+  # VPN (NordVPN)
+  vpn:
+    # image: ghcr.io/bubuntux/nordvpn:v3.9.5-1
+    image: ghcr.io/bubuntux/nordvpn:latest
+    container_name: vpn
+#    hostname: vpn # doesnt work
+    restart: unless-stopped
+    devices:
+      - /dev/net/tun
+    ulimits: # set these to unlimited
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - NET_ADMIN # Required
+      - NET_RAW # Required
+    environment:
+      # Review https://github.com/bubuntux/nordvpn#environment-variables
+      - USER=${VPN_USER} # Required
+      - PASS=${VPN_PW} # Required
+      - CONNECT=${VPN_CONNECT_LOCATION}
+      - TECHNOLOGY=NordLynx
+      - NETWORK=${SUBNET}
+    ports:
+      - 8080:8080 # QBITTORRENT web port
+      - 6881:6881 # QBITTORRENT
+      - 6881:6881/udp # QBITTORRENT
+#    sysctls:
+#      - net.ipv6.conf.all.disable_ipv6=1 # Recomended if using ipv4 only
+
+  # Torrent Client
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: torrent
+    restart: unless-stopped
+    network_mode: service:vpn
+    depends_on:
+      - vpn
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - WEBUI_PORT=8080
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/config/qbt:/config
+      - ${ROOT_DIR}/data/downloads:/downloads
+
+  # NZB Client
+  # Apparently no VPN is required, since its all SSL encrpyted...
+  # sabnzbd:
+  #   image: lscr.io/linuxserver/sabnzbd:latest
+  #   container_name: sabnzbd
+  #   restart: unless-stopped
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TIMEZONE}
+  #   volumes:
+  #     - ${ROOT_DIR}/config/sabnzbd:/config
+  #     - ${ROOT_DIR}/data/downloads:/downloads
+  #     - ${ROOT_DIR}/data/downloads/incomplete:/downloads/incomplete
+  #   ports:
+  #     - 8085:8085
+
+  # Indexer
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    hostname: prowlarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    ports:
+      - 9696:9696
+    volumes:
+      - ${ROOT_DIR}/config/prowlarr:/config
+
+  # Movies
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    hostname: radarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/data:/data 
+      - ${ROOT_DIR}/config/radarr:/config
+    ports:
+      - 7878:7878
+
+  # TV Shows
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    hostname: sonarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/data:/data
+      - ${ROOT_DIR}/config/sonarr:/config
+    ports:
+      - 8989:8989
+  
+  # Music
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    hostname: lidarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/config/lidarr:/config
+      - ${ROOT_DIR}/data:/data
+    ports:
+      - 8686:8686
+
+  # Books
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    hostname: readarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/config/readarr:/config
+      - ${ROOT_DIR}/data:/data
+    ports:
+      - 8787:8787
+
+  # Subtitles
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    hostname: bazarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/config/bazarr:/config
+      - ${ROOT_DIR}/data:/data
+    ports:
+      - 6767:6767
+
+  # Media Request Manager
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/data:/data
+      - ${ROOT_DIR}/config/overseerr:/config
+    ports:
+      - 5055:5055
+
+  # Discord Request Bot
+  requestrr:
+    image: lscr.io/linuxserver/requestrr:latest
+    container_name: requestrr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/config/requestrr:/config
+    ports:
+      - 4545:4545
+
+  # Alternative to Plex (Open Source, Free!)
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    hostname: jellyfin
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/config/jellyfin:/config
+      - ${ROOT_DIR}/config/jellyfin/cache:/cache
+      - ${ROOT_DIR}/data:/data
+      - ${ROOT_DIR}/data/media/movies:/movies
+      - ${ROOT_DIR}/data/media/tvshows/:/tvshows
+      - ${ROOT_DIR}/data/media/anime:/anime
+      - ${ROOT_DIR}/data/media/music:/music
+      - ${ROOT_DIR}/data/media/books:/books
+      - ${ROOT_DIR}/data/media/other:/other
+    ports:
+      - 8096:8096
+  
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    restart: unless-stopped
+    environment:
+      - HOSTNAME=plex
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - PLEX_CLAIM=${PLEX_CLAIM_ID}
+      - UMASK=002
+    network_mode: host
+    volumes:
+      - ${ROOT_DIR}/config/plex:/config
+      - ${ROOT_DIR}/config/plex/transcode:/transcode
+      - ${ROOT_DIR}/data:/data
+      - ${ROOT_DIR}/data/media/movies:/movies
+      - ${ROOT_DIR}/data/media/tvshows/:/tvshows
+      - ${ROOT_DIR}/data/media/anime:/anime
+      - ${ROOT_DIR}/data/media/music:/music
+      - ${ROOT_DIR}/data/media/books:/books
+      - ${ROOT_DIR}/data/media/other:/other
+
+  # Plex Analyzer
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/config/tautulli:/config
+    ports:
+      - 8181:8181
+
+  # Cloud DNS Server for Prowlarr
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    ports:
+      - 8191:8191
+
+#######################################################################
+#             OTHER CONTAINERS OUTSIDE OF PLEX ENVIRONMENT            #
+#######################################################################
+
+  # Network Wide Ad Blocking
+  # http://192.168.50.58:8001/admin/login.php
+  # pihole:
+  #   image: pihole/pihole:latest
+  #   container_name: pihole
+  #   restart: unless-stopped
+  #   ports:
+  #     - "53:53/tcp"
+  #     - "53:53/udp"
+  #     - "8001:80/tcp"
+  #   environment:
+  #     TZ: ${TIMEZONE}
+  #     WEBPASSWORD: ${PIHOLE_PW}
+  #   volumes:
+  #     - ${ROOT_DIR}/config/pihole/etc-pihole:/etc/pihole
+  #     - ${ROOT_DIR}/config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+
+
+
+  # Encoder 
+  # https://docs.tdarr.io/docs/installation/docker/run-compose
+  # tdarr:
+  #   container_name: tdarr
+  #   image: ghcr.io/haveagitgat/tdarr:latest
+  #   network_mode: bridge
+  #   restart: unless-stopped
+  #   ports:
+  #     - 8265:8265 # webUI port
+  #     - 8266:8266 # server port
+  #     - 8267:8267 # Internal node port
+  #     - 8268:8268 # Example extra node port
+  #   environment:
+  #     - TZ=Europe/London
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - UMASK_SET=002
+  #     - serverIP=0.0.0.0
+  #     - serverPort=8266
+  #     - webUIPort=8265
+  #     - internalNode=true
+  #     - nodeName=MyInternalNode
+  #   volumes:
+  #     - /docker/tdarr/server:/app/server
+  #     - /docker/tdarr/configs:/app/configs
+  #     - /docker/tdarr/logs:/app/logs
+  #     - /media:/media
+  #     - /transcode_cache:/temp
+
+  # node example
+  # tdarr-node:
+  #   container_name: tdarr-node
+  #   image: ghcr.io/haveagitgat/tdarr_node:latest
+  #   restart: unless-stopped
+  #   network_mode: service:tdarr
+  #   environment:
+  #     - TZ=Europe/London
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - UMASK_SET=002
+  #     - nodeName=MainNode
+  #     - serverIP=0.0.0.0
+  #     - serverPort=8266
+  #   volumes:
+  #     - /docker/tdarr/configs:/app/configs
+  #     - /docker/tdarr/logs:/app/logs
+  #     - /media:/media
+  #     - /transcode_cache:/temp
+
+  # Not sure
+  # cloudflared: 
+  #   image: cloudflare/cloudflared 
+  #   container_name: cloudflare-tunnel 
+  #   host_name: cloudflare-tunnel 
+  #   restart: unless-stopped 
+  #   command: tunnel run 
+  #   networks:
+  #     - myNetwork
+  #   environment: 
+  #     - TUNNEL_TOKEN=my_token
