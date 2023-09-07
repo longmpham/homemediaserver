@@ -19,8 +19,7 @@ services:
       - NET_RAW # Required
     environment:
       # Review https://github.com/bubuntux/nordvpn#environment-variables
-      - USER=${VPN_USER} # Required
-      - PASS=${VPN_PW} # Required
+      - TOKEN=${VPN_TOKEN}
       - CONNECT=${VPN_CONNECT_LOCATION}
       - TECHNOLOGY=NordLynx
       - NETWORK=${SUBNET}
@@ -93,7 +92,7 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/data:/data 
+      - ${ROOT_DIR}/data:/data
       - ${ROOT_DIR}/config/radarr:/config
     ports:
       - 7878:7878
@@ -114,7 +113,7 @@ services:
       - ${ROOT_DIR}/config/sonarr:/config
     ports:
       - 8989:8989
-  
+
   # Music
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
@@ -220,7 +219,9 @@ services:
       - ${ROOT_DIR}/data/media/other:/other
     ports:
       - 8096:8096
-  
+    devices:
+      - /dev/dri:/dev/dri
+
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
@@ -235,7 +236,8 @@ services:
     network_mode: host
     volumes:
       - ${ROOT_DIR}/config/plex:/config
-      - ${ROOT_DIR}/config/plex/transcode:/transcode
+#      - ${ROOT_DIR}/config/plex/transcode:/transcode
+      - /tmp/transcode:/transcode # use local drive not HDD/External drives!
       - ${ROOT_DIR}/data:/data
       - ${ROOT_DIR}/data/media/movies:/movies
       - ${ROOT_DIR}/data/media/tvshows/:/tvshows
@@ -243,6 +245,8 @@ services:
       - ${ROOT_DIR}/data/media/music:/music
       - ${ROOT_DIR}/data/media/books:/books
       - ${ROOT_DIR}/data/media/other:/other
+    devices:
+      - /dev/dri:/dev/dri
 
   # Plex Analyzer
   tautulli:
@@ -259,7 +263,7 @@ services:
     ports:
       - 8181:8181
 
-  # Cloud DNS Server for Prowlarr
+# Proxy Server to Bypass Cloudflare Protection
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
@@ -269,90 +273,33 @@ services:
       - LOG_HTML=false
       - CAPTCHA_SOLVER=none
       - TZ=${TIMEZONE}
-      - UMASK=002
     ports:
       - 8191:8191
 
-#######################################################################
-#             OTHER CONTAINERS OUTSIDE OF PLEX ENVIRONMENT            #
-#######################################################################
+# Portainer
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - 9443:9443
+    volumes:
+      - ${ROOT_DIR}/config/portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
 
   # Network Wide Ad Blocking
-  # http://192.168.50.58:8001/admin/login.php
-  # pihole:
-  #   image: pihole/pihole:latest
-  #   container_name: pihole
-  #   restart: unless-stopped
-  #   ports:
-  #     - "53:53/tcp"
-  #     - "53:53/udp"
-  #     - "8001:80/tcp"
-  #   environment:
-  #     TZ: ${TIMEZONE}
-  #     WEBPASSWORD: ${PIHOLE_PW}
-  #   volumes:
-  #     - ${ROOT_DIR}/config/pihole/etc-pihole:/etc/pihole
-  #     - ${ROOT_DIR}/config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
-
-
-
-  # Encoder 
-  # https://docs.tdarr.io/docs/installation/docker/run-compose
-  # tdarr:
-  #   container_name: tdarr
-  #   image: ghcr.io/haveagitgat/tdarr:latest
-  #   network_mode: bridge
-  #   restart: unless-stopped
-  #   ports:
-  #     - 8265:8265 # webUI port
-  #     - 8266:8266 # server port
-  #     - 8267:8267 # Internal node port
-  #     - 8268:8268 # Example extra node port
-  #   environment:
-  #     - TZ=Europe/London
-  #     - PUID=${PUID}
-  #     - PGID=${PGID}
-  #     - UMASK_SET=002
-  #     - serverIP=0.0.0.0
-  #     - serverPort=8266
-  #     - webUIPort=8265
-  #     - internalNode=true
-  #     - nodeName=MyInternalNode
-  #   volumes:
-  #     - /docker/tdarr/server:/app/server
-  #     - /docker/tdarr/configs:/app/configs
-  #     - /docker/tdarr/logs:/app/logs
-  #     - /media:/media
-  #     - /transcode_cache:/temp
-
-  # node example
-  # tdarr-node:
-  #   container_name: tdarr-node
-  #   image: ghcr.io/haveagitgat/tdarr_node:latest
-  #   restart: unless-stopped
-  #   network_mode: service:tdarr
-  #   environment:
-  #     - TZ=Europe/London
-  #     - PUID=${PUID}
-  #     - PGID=${PGID}
-  #     - UMASK_SET=002
-  #     - nodeName=MainNode
-  #     - serverIP=0.0.0.0
-  #     - serverPort=8266
-  #   volumes:
-  #     - /docker/tdarr/configs:/app/configs
-  #     - /docker/tdarr/logs:/app/logs
-  #     - /media:/media
-  #     - /transcode_cache:/temp
-
-  # Not sure
-  # cloudflared: 
-  #   image: cloudflare/cloudflared 
-  #   container_name: cloudflare-tunnel 
-  #   host_name: cloudflare-tunnel 
-  #   restart: unless-stopped 
-  #   command: tunnel run 
-  #   networks:
-  #     - myNetwork
-  #   environment: 
-  #     - TUNNEL_TOKEN=my_token
+#  pihole:
+#    image: pihole/pihole:latest
+#    container_name: pihole
+#    restart: unless-stopped
+#    ports:
+#      - 53:53/tcp
+#      - 53:53/udp
+#      - 8001:80/tcp
+#    environment:
+#      TZ: ${TIMEZONE}
+#      WEBPASSWORD: ${PIHOLE_PW}
+#    volumes:
+#      - ${ROOT_DIR}/config/pihole/etc-pihole:/etc/pihole
+#      - ${ROOT_DIR}/config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
