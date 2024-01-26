@@ -1,0 +1,1 @@
+BIOS -> Chipset -> South Cluster Configuration -> State after G3 , change this option to S0 and reboot,  then unplug power supply and plug again.

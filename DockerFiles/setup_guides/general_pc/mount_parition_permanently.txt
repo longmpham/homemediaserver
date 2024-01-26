@@ -1,0 +1,13 @@
+Mount Partition Permanently
+
+1. 
+sudo blkid
+2. Get the UUID of the drive (not PARTUUID!) and copy / picture it.
+3. Create some lines in the fstab. Use any editor you want.
+sudo nano /etc/fstab
+
+4. In the editor...
+<UUID>	<MOUNT_DIR>	<MOUNT_TYPE(NTFS, EXT4, etc.)>	<DEFAULTS>	<SOMETHING>	<MOUNT_POSITION>
+UUID=03ec5dd3 /media/name_of_drive nfts-3g defaults  0      0
+
+5. Save and close. Restart Linux

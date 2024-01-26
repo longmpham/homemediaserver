@@ -1,0 +1,27 @@
+https://www.cnx-software.com/2023/07/07/fixing-wifi-6-on-linux-in-alder-lake-n-mini-pcs-intel-n95-n100-core-i3-n300/
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=975726
+
+This is using the Beelink S12 Pro with the AX101 chip and only required if you want to use WIFI and Bluetooth!
+
+1. install ubuntu
+2. sudo apt-get update && sudo apt-get upgrade
+3. Restart
+4. 
+sudo add-apt-repository ppa:cappelikan/ppa
+sudo apt update && sudo apt full-upgrade
+sudo apt install mainline
+5. Run mainline. 
+mainline-gtk
+6. Select Kernel (6.5.1 as of this writing). 6.4 RC7 is apparently the version that works, so anything after(?)
+7. Install the kernel. Let it run, until you see "mainline: done". Select Close.
+8. Restart Ubuntu
+9. Check the kernel version
+uname -a 
+10. Connect to Wifi! Yay! BT doesn't appear to work still.
+11. Note: You may have to disable the "AX" mode in your router.
+12. CD to /usr/lib/firmware/intel and then paste the following (rename BT devices)
+sudo ln -s ibt-1040-4150.ddc ibt-0040-1050.ddc
+sudo ln -s ibt-1040-4150.sfi ibt-0040-1050.sfi
+13. install HW Transcoding! 
+sudo apt-get install intel-opencl-icd
+14. Restart everything!

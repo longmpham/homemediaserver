@@ -1,0 +1,94 @@
+tdarr instructions
+
+paste the compose:
+# tdarr - convert and transcode videos
+  tdarr:
+    container_name: tdarr
+    image: ghcr.io/haveagitgat/tdarr:latest
+    restart: unless-stopped
+    # network_mode: bridge
+    ports:
+      - 8265:8265 # webUI port
+      - 8266:8266 # server port
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK_SET=002
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - webUIPort=8265
+      - internalNode=true
+      - inContainer=true
+      - nodeName=MyInternalNode
+      # - NVIDIA_DRIVER_CAPABILITIES=all
+      # - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ${ROOT_DIR}/config/tdarr/server:/tdarr/server
+      - ${ROOT_DIR}/config/tdarr/configs:/tdarr/configs
+      - ${ROOT_DIR}/config/tdarr/logs:/tdarr/logs
+      - ${ROOT_DIR}/data:/data1
+      - "/media/long/Long WD 3TB:/data2"
+      - /tmp/tdarr_transcode_cache:/temp # put this on an SSD, not your storage though
+    devices:
+      - /dev/dri:/dev/dri
+
+      
+# tdarr-node required. Tdarr container calls this sucker
+  tdarr-node:
+    container_name: tdarr-node
+    image: ghcr.io/haveagitgat/tdarr_node:latest
+    restart: unless-stopped
+    network_mode: service:tdarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK_SET=002
+      - nodeName=MyExternalNode
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - inContainer=true
+    volumes:
+      - ${ROOT_DIR}/config/tdarr/configs:/tdarr/configs
+      - ${ROOT_DIR}/config/tdarr/logs:/tdarr/logs
+      - ${ROOT_DIR}/data:/data1
+      - "/media/long/Long WD 3TB:/data2"
+      - /tmp/tdarr_transcode_cache:/temp # put this on an SSD, not your storage though
+    devices:
+      - /dev/dri:/dev/dri
+
+
+
+finally, when you launch tdarr at http://<ip_addr>:8265
+go to libraries
+1. source > find your source probably /data or similar (check your docker config)
+2. transcode cache > /temp (check your docker config)
+3. Output folder > enable or disable; if enabled, put a location
+4. Transcode Options. QSV lies under the GPU!!!
+- unselect overview and below will be the "Add Plugin ID"
+- enter the community IDs, "Tdarr_Plugin_JB69_JBHEVCQSV_MinimalFile", and "Tdarr_Plugin_bsh1_Boosh_FFMPEG_QSV_HEVC"
+- once entered, they will appear in the list at the bottom. Configure if you want!
+- select overview again and drag the first entered plugin to the 3rd position, and the second entered plugin in the 4th position.
+- the 5th position should be CPU encoding while the 6th is the GPU encoding
+5. Finally, scroll towards the top and under "Options" select "Scan (Fresh)" which will start scanning your folder you put in #1
+6. Go to the main page Tdarr and under MyInternalNode, enter some cores for the GPU. I entered 3 for the transcoder and 1 for the health check.
+7. At this point the Tdarr server will begin its work. In your host terminal (not docker) you can check if QSV is working with "intel_gpu_top".
+- if there is no action, your Tdarr server is NOT using QSV and I would stop everything and check your GPU installation again.
+
+
+Briefly, GPU setup:
+this worked for 10th gen
+paste this in docker console
+apt install vainfo intel-media-va-driver-non-free
+
+
+Tdarr classic plugins: 
+Tdarr_Plugin_075a_Transcode_Customisable
+configuration:
+av1
+ffmpeg
+<io> -c:v av1_qsv -preset 2 -global_quality 26 -pix_fmt p010le -c:a copy
+.mkv
+
+

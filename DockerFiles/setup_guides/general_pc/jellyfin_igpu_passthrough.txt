@@ -1,0 +1,60 @@
+https://www.reddit.com/r/Proxmox/comments/14fzj8l/tutorial_full_igpu_passthrough_for_jellyfin/
+
+first, Inside your Ubuntu guest, make sure your iGPU is detected :
+    cd /dev/dri && ls -l
+This command should show this line :
+    crw-rw---- 1 root render 226, 128 Jun 22 02:02 renderD128
+renderD128 is usually your iGPU. Make note of the group. In this case it' "render", 
+if it's different this will be relevant for the next step. I will be installing Jellyfin 
+using docker (using the official image), this is by far the fastest way to get up 
+and going at this point (the image comes with the necessary stuff).
+I recommend you refer to the Jellyfin official doc, but here's what I did :
+Figure out the id of the render group. (If your group is different, check for its id)
+    getent group render | cut -d: -f3
+here's an example output:
+    long@long-mini:/dev/dri$ getent group render | cut -d: -f3
+    110
+
+configure your docker compose:
+
+  # Alternative to Plex (Open Source, Free!)
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    hostname: jellyfin
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${ROOT_DIR}/config/jellyfin:/config
+      - ${ROOT_DIR}/config/jellyfin/cache:/cache
+      - ${ROOT_DIR}/data:/data
+      - ${ROOT_DIR}/data/media/movies:/movies
+      - ${ROOT_DIR}/data/media/tvshows/:/tvshows
+      - ${ROOT_DIR}/data/media/anime:/anime
+      - ${ROOT_DIR}/data/media/music:/music
+      - ${ROOT_DIR}/data/media/books:/books
+      - ${ROOT_DIR}/data/media/other:/other
+    ports:
+      - 8096:8096
+    devices:
+      - /dev/dri:/dev/dri
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    group_add:
+      - "110"
+
+    Group_add => I specified the id of the render group that we fetched earlier
+    Network_mode:"host" => I use this to have DLNA enabled with my Samsung TVs
+    Devices => pass the entire device (iGPU) to the docker container
+
+After the Docker container is up and running (and healthy), set it up normally.
+To enable hardware acceleration, go into : Administration > Dashboard > Playback
+Enable Intel QuickSync with these options :
+Codecs :
+    All but VC1 and VP8 (somehow VC1 didn't work for me with UHD 770)
+Hardware encodings :
+    All
+    Low power mode YES : worked out of the box for me (that's 12th gen thing maybe)

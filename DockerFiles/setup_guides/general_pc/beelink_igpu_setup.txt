@@ -1,0 +1,14 @@
+https://installati.one/install-intel-opencl-icd-ubuntu-22-04/?expand_article=1
+https://github.com/intel/compute-runtime
+
+This is using the Beelink S12 Pro with the AX101 chip and only 
+required if you want to use WIFI and Bluetooth!
+
+What is intel-opencl-icd? intel-opencl-icd is:
+    The Intel(R) Graphics Compute Runtime for OpenCL(TM) is a open 
+    source project to converge Intel’s development efforts on OpenCL(TM) 
+    compute stacks supporting the GEN graphics hardware architecture.
+
+sudo apt-get install intel-opencl-icd
+
+Restart.

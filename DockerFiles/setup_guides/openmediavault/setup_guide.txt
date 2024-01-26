@@ -1,0 +1,25 @@
+1. install OMV on a USB, use Rufus or Etcher, etc to put the ISO on it
+2. follow setup guide, should be self explanatory. Recommend Ethernet but wifi can work too.
+- if you choose wifi, we will set a static IP later
+3. Reboot the computer and boot into OMV
+- if the IP address is incorrect on the boot up CLI, go to your router and find it OR
+- login with user:root and pw:<what_you_set> in the CLI and type 'ip addr'
+4. Setup some basic house keeping under System such as:
+- PW change 
+- date/time
+5. Setup static IP by going to Network > Interfaces and edit the connection listed
+-IPv4
+-- Method: Static
+-- Address: 192.168.50.x
+-- Netmask: 255.255.255.0
+-- Gateway: 192.168.50.1 (your router usually)
+- nameserver (DNS)
+-- DNS servers: 8.8.8.8,8.8.4.4
+6. Setup OMV extras by using a terminal or the original CLI
+wget -O - https://github.com/OpenMediaVault-Plugin-Developers/packages/raw/master/install | bash
+- after it finishes, reboot the computer
+7. Go to System > omv-extras and select Docker and Save it. After it completes, Enable Backports
+8. Go to System > Plugins and find and install:
+- flashmemory
+- docker-compose
+9. DISK MANAGEMENT TIME!

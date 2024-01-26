@@ -46,6 +46,7 @@ services:
     volumes:
       - ${ROOT_DIR}/config/qbt:/config
       - ${ROOT_DIR}/data/downloads:/downloads
+      - ${ROOT_DIR}/data/downloads/torrent_files:/torrent_files
 
   # NZB Client
   # Apparently no VPN is required, since its all SSL encrpyted...
@@ -92,8 +93,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/data:/data
       - ${ROOT_DIR}/config/radarr:/config
+      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - 7878:7878
 
@@ -109,8 +111,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/data:/data
       - ${ROOT_DIR}/config/sonarr:/config
+      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - 8989:8989
 
@@ -127,7 +130,8 @@ services:
       - UMASK=002
     volumes:
       - ${ROOT_DIR}/config/lidarr:/config
-      - ${ROOT_DIR}/data:/data
+      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - 8686:8686
 
@@ -144,7 +148,8 @@ services:
       - UMASK=002
     volumes:
       - ${ROOT_DIR}/config/readarr:/config
-      - ${ROOT_DIR}/data:/data
+      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - 8787:8787
 
@@ -161,7 +166,8 @@ services:
       - UMASK=002
     volumes:
       - ${ROOT_DIR}/config/bazarr:/config
-      - ${ROOT_DIR}/data:/data
+      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - 6767:6767
 
@@ -176,8 +182,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/data:/data
       - ${ROOT_DIR}/config/overseerr:/config
+      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - 5055:5055
 
@@ -236,15 +243,25 @@ services:
     network_mode: host
     volumes:
       - ${ROOT_DIR}/config/plex:/config
-#      - ${ROOT_DIR}/config/plex/transcode:/transcode
+#      - ${ROOT_DIR}/config/plex/transcode:/transcode # don't use this
       - /tmp/transcode:/transcode # use local drive not HDD/External drives!
+      # Drive 1
       - ${ROOT_DIR}/data:/data
       - ${ROOT_DIR}/data/media/movies:/movies
-      - ${ROOT_DIR}/data/media/tvshows/:/tvshows
+      - ${ROOT_DIR}/data/media/tvshows:/tvshows
       - ${ROOT_DIR}/data/media/anime:/anime
       - ${ROOT_DIR}/data/media/music:/music
       - ${ROOT_DIR}/data/media/books:/books
       - ${ROOT_DIR}/data/media/other:/other
+      # Drive 2
+      - ${DRIVE_2}/data2:/data2
+      - ${DRIVE_2}/data2/media/movies2:/movies2
+      - ${DRIVE_2}/data2/media/tvshows2:/tvshows2
+      - ${DRIVE_2}/data2/media/anime2:/anime2
+      - ${DRIVE_2}/data2/media/music2:/music2
+      - ${DRIVE_2}/data2/media/books2:/books2
+      - ${DRIVE_2}/data2/media/other2:/other2
+      # Drive N -> define a /datan dir and NOT /data/<whatever>
     devices:
       - /dev/dri:/dev/dri
 
@@ -277,7 +294,6 @@ services:
       - 8191:8191
 
 # Portainer
-
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -286,17 +302,18 @@ services:
     volumes:
       - ${ROOT_DIR}/config/portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
+    restart: always
 
-  # Network Wide Ad Blocking
+# Network Wide Ad Blocking
 #  pihole:
 #    image: pihole/pihole:latest
 #    container_name: pihole
 #    restart: unless-stopped
-#    ports:
-#      - 53:53/tcp
-#      - 53:53/udp
-#      - 8001:80/tcp
+#    network_mode: host
+##    ports:
+##      - 53:53/tcp
+##      - 53:53/udp
+##      - 8001:80/tcp
 #    environment:
 #      TZ: ${TIMEZONE}
 #      WEBPASSWORD: ${PIHOLE_PW}

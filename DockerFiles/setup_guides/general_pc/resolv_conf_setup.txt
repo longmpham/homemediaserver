@@ -1,0 +1,10 @@
+sudo cp /etc/resolv.conf /etc/resolv.conf.bak
+sudo nano /etc/resolv.conf
+
+edit the file and change to 
+
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+nameserver 1.0.0.1
+
+save and close the file, restart

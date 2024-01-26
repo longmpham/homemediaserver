@@ -1,0 +1,5 @@
+STOP//PAUSE
+docker exec tdarr pkill --signal STOP ffmpeg
+
+START
+docker exec tdarr pkill --signal CONT ffmpeg

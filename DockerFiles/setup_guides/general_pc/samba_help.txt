@@ -1,0 +1,19 @@
+sudo nano /etc/samba/smb.conf
+sudo service smbd restart
+Scroll to the bottom
+
+add the following:
+
+[share]
+    comment = HDD On Linux Share
+    path = /media/plex
+    browsable = yes
+    guest ok = yes
+    read only = no
+    writeable = yes
+    create mask = 0777
+    directory mask = 0777
+    force user = root
+
+Save and restart
+sudo service smbd restart

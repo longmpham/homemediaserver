@@ -1,0 +1,9 @@
+Go to 
+sudo nano /etc/systemd/logind.conf
+
+and uncomment 
+
+HandleLidSwitch=ignore
+HandleLidSwitchExternalPower=ignore
+
+save and close the file. Restart

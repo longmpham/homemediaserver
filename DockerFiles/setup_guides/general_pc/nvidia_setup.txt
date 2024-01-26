@@ -1,0 +1,20 @@
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html#installing-with-apt
+https://www.youtube.com/watch?v=OFWKevbjDPU
+https://www.linuxcapable.com/install-nvidia-drivers-on-ubuntu-linux/
+
+how to run GPU, ubuntu, docker, and tdarr
+
+1. check if GPU is installed. In the following list, one option will have 
+   a "recommended" label attached to it. Select that one without "open" in the name
+ubuntu-drivers devices 
+
+2. Install the GPU NVIDIA driver found above
+sudo apt install <nvidia_driver_version>
+ex. sudo apt install nvidia-driver-510
+also, if you want all recommended drivers,
+sudo ubuntu-drivers autoinstall 
+
+3. Restart your PC
+sudo reboot
+
+Install the NVIDIA Container Toolkit
