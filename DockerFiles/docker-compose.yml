@@ -7,7 +7,7 @@ services:
     image: ghcr.io/bubuntux/nordvpn:latest
     container_name: vpn
 #    hostname: vpn # doesnt work
-    restart: unless-stopped
+    restart: always
     devices:
       - /dev/net/tun
     ulimits: # set these to unlimited
@@ -24,29 +24,38 @@ services:
       - TECHNOLOGY=NordLynx
       - NETWORK=${SUBNET}
     ports:
-      - 8080:8080 # QBITTORRENT web port
-      - 6881:6881 # QBITTORRENT
-      - 6881:6881/udp # QBITTORRENT
+      - ${QBT_WEB_PORT}:${QBT_WEB_PORT} # QBT_WEB_PORT
+      - ${QBT_TORRENTING_PORT}:${QBT_TORRENTING_PORT} # QBT_TORRENTING_PORT
+      - ${QBT_TORRENTING_PORT}:${QBT_TORRENTING_PORT}/udp # QBT_TORRENTING_PORT_UDP
 #    sysctls:
 #      - net.ipv6.conf.all.disable_ipv6=1 # Recomended if using ipv4 only
 
   # Torrent Client
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: torrent
-    restart: unless-stopped
+    container_name: qbittorrent
+    restart: always
     network_mode: service:vpn
     depends_on:
       - vpn
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - WEBUI_PORT=8080
+      - WEBUI_PORT=${QBT_WEB_PORT}
+      - TORRENTING_PORT=${QBT_TORRENTING_PORT}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/qbt:/config
-      - ${ROOT_DIR}/data/downloads:/downloads
-      - ${ROOT_DIR}/data/downloads/torrent_files:/torrent_files
+      - ${DRIVE_1}/config/qbt:/config
+
+      # Location to put downloads in
+      - ${DRIVE_2}/data2/downloads:/downloads
+      - ${DRIVE_2}/data2/downloads/downloading:/downloads
+      - ${DRIVE_2}/data2/downloads/torrent_files:/torrent_files
+      # For manual moving... requires a reference below
+      - ${DRIVE_1}/data/media/movies:/movies
+      - ${DRIVE_1}/data/media/tvshows:/tvshows
+      - ${DRIVE_2}/data2/media/movies2:/movies2
+      - ${DRIVE_2}/data2/media/tvshows2:/tvshows2
 
   # NZB Client
   # Apparently no VPN is required, since its all SSL encrpyted...
@@ -59,11 +68,11 @@ services:
   #     - PGID=${PGID}
   #     - TZ=${TIMEZONE}
   #   volumes:
-  #     - ${ROOT_DIR}/config/sabnzbd:/config
-  #     - ${ROOT_DIR}/data/downloads:/downloads
-  #     - ${ROOT_DIR}/data/downloads/incomplete:/downloads/incomplete
+  #     - ${DRIVE_1}/config/sabnzbd:/config
+  #     - ${DRIVE_1}/data/downloads:/downloads
+  #     - ${DRIVE_1}/data/downloads/incomplete:/downloads/incomplete
   #   ports:
-  #     - 8085:8085
+  #     - ${NZB_CLIENT_PORT}:${NZB_CLIENT_PORT}
 
   # Indexer
   prowlarr:
@@ -77,9 +86,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     ports:
-      - 9696:9696
+      - ${PROWLARR_PORT}:${PROWLARR_PORT} # 9696
     volumes:
-      - ${ROOT_DIR}/config/prowlarr:/config
+      - ${DRIVE_1}/config/prowlarr:/config
 
   # Movies
   radarr:
@@ -93,11 +102,11 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/radarr:/config
-      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_1}/config/radarr:/config
+      - ${DRIVE_1}/data:/data # drive 1
       - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
-      - 7878:7878
+      - ${RADARR_PORT}:${RADARR_PORT} # Default 7878
 
   # TV Shows
   sonarr:
@@ -111,11 +120,11 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/sonarr:/config
-      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_1}/config/sonarr:/config
+      - ${DRIVE_1}/data:/data # drive 1
       - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
-      - 8989:8989
+      - ${SONARR_PORT}:${SONARR_PORT} # Default 8989
 
   # Music
   lidarr:
@@ -129,11 +138,11 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/lidarr:/config
-      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_1}/config/lidarr:/config
+      - ${DRIVE_1}/data:/data # drive 1
       - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
-      - 8686:8686
+      - ${LIDARR_PORT}:${LIDARR_PORT} # Default 8686
 
   # Books
   readarr:
@@ -147,11 +156,11 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/readarr:/config
-      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_1}/config/readarr:/config
+      - ${DRIVE_1}/data:/data # drive 1
       - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
-      - 8787:8787
+      - ${READARR_PORT}:${READARR_PORT} # Default 8787
 
   # Subtitles
   bazarr:
@@ -165,11 +174,11 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/bazarr:/config
-      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_1}/config/bazarr:/config
+      - ${DRIVE_1}/data:/data # drive 1
       - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
-      - 6767:6767
+      - ${BAZARR_PORT}:${BAZARR_PORT} # Default 6767
 
   # Media Request Manager
   overseerr:
@@ -182,11 +191,11 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/overseerr:/config
-      - ${ROOT_DIR}/data:/data # drive 1
+      - ${DRIVE_1}/config/overseerr:/config
+      - ${DRIVE_1}/data:/data # drive 1
       - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
-      - 5055:5055
+      - ${OVERSEERR_PORT}:${OVERSEERR_PORT} # Default 5055
 
   # Discord Request Bot
   requestrr:
@@ -199,9 +208,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/requestrr:/config
+      - ${DRIVE_1}/config/requestrr:/config
     ports:
-      - 4545:4545
+      - ${REQUESTRR_PORT}:${REQUESTRR_PORT} # Default 4545
 
   # Alternative to Plex (Open Source, Free!)
   jellyfin:
@@ -215,17 +224,16 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/jellyfin:/config
-      - ${ROOT_DIR}/config/jellyfin/cache:/cache
-      - ${ROOT_DIR}/data:/data
-      - ${ROOT_DIR}/data/media/movies:/movies
-      - ${ROOT_DIR}/data/media/tvshows/:/tvshows
-      - ${ROOT_DIR}/data/media/anime:/anime
-      - ${ROOT_DIR}/data/media/music:/music
-      - ${ROOT_DIR}/data/media/books:/books
-      - ${ROOT_DIR}/data/media/other:/other
+      - ${DRIVE_1}/config/jellyfin:/config
+      - ${DRIVE_1}/config/jellyfin/cache:/cache
+      - ${DRIVE_1}/data:/data
+      - ${DRIVE_1}/data/media/movies:/movies
+      - ${DRIVE_1}/data/media/tvshows/:/tvshows
+      - ${DRIVE_1}/data/media/anime:/anime
+      - ${DRIVE_1}/data/media/music:/music
+      - ${DRIVE_1}/data/media/books:/books
     ports:
-      - 8096:8096
+      - ${JELLYFIN_PORT}:${JELLYFIN_PORT} # Default 8096
     devices:
       - /dev/dri:/dev/dri
 
@@ -233,6 +241,7 @@ services:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
     restart: unless-stopped
+    network_mode: host
     environment:
       - HOSTNAME=plex
       - PUID=${PUID}
@@ -240,19 +249,17 @@ services:
       - TZ=${TIMEZONE}
       - PLEX_CLAIM=${PLEX_CLAIM_ID}
       - UMASK=002
-    network_mode: host
     volumes:
-      - ${ROOT_DIR}/config/plex:/config
-#      - ${ROOT_DIR}/config/plex/transcode:/transcode # don't use this
+      - ${DRIVE_1}/config/plex:/config
+#      - ${DRIVE_1}/config/plex/transcode:/transcode # don't use this, it's slower
       - /tmp/transcode:/transcode # use local drive not HDD/External drives!
       # Drive 1
-      - ${ROOT_DIR}/data:/data
-      - ${ROOT_DIR}/data/media/movies:/movies
-      - ${ROOT_DIR}/data/media/tvshows:/tvshows
-      - ${ROOT_DIR}/data/media/anime:/anime
-      - ${ROOT_DIR}/data/media/music:/music
-      - ${ROOT_DIR}/data/media/books:/books
-      - ${ROOT_DIR}/data/media/other:/other
+      - ${DRIVE_1}/data:/data
+      - ${DRIVE_1}/data/media/movies:/movies
+      - ${DRIVE_1}/data/media/tvshows:/tvshows
+      - ${DRIVE_1}/data/media/anime:/anime
+      - ${DRIVE_1}/data/media/music:/music
+      - ${DRIVE_1}/data/media/books:/books
       # Drive 2
       - ${DRIVE_2}/data2:/data2
       - ${DRIVE_2}/data2/media/movies2:/movies2
@@ -260,8 +267,6 @@ services:
       - ${DRIVE_2}/data2/media/anime2:/anime2
       - ${DRIVE_2}/data2/media/music2:/music2
       - ${DRIVE_2}/data2/media/books2:/books2
-      - ${DRIVE_2}/data2/media/other2:/other2
-      # Drive N -> define a /datan dir and NOT /data/<whatever>
     devices:
       - /dev/dri:/dev/dri
 
@@ -276,9 +281,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${ROOT_DIR}/config/tautulli:/config
+      - ${DRIVE_1}/config/tautulli:/config
     ports:
-      - 8181:8181
+      - ${TAUTULLI_PORT}:${TAUTULLI_PORT} # Default 8181
 
 # Proxy Server to Bypass Cloudflare Protection
   flaresolverr:
@@ -291,18 +296,72 @@ services:
       - CAPTCHA_SOLVER=none
       - TZ=${TIMEZONE}
     ports:
-      - 8191:8191
+      - ${FLARESOLVERR_PORT}:${FLARESOLVERR_PORT} # Default 8191
 
 # Portainer
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
     ports:
-      - 9443:9443
+      - ${PORTAINER_PORT}:${PORTAINER_PORT} # Default 9443
     volumes:
-      - ${ROOT_DIR}/config/portainer_data:/data
+      - ${DRIVE_1}/config/portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
+
+# tdarr - convert and transcode videos
+#   tdarr:
+#     container_name: tdarr
+#     image: ghcr.io/haveagitgat/tdarr:latest
+#     restart: unless-stopped
+#     # network_mode: bridge
+#     ports:
+#       - ${TDARR_WEBUI_PORT}:${TDARR_WEBUI_PORT} # Default 8265
+#       - ${TDARR_SERVER_PORT}:${TDARR_SERVER_PORT} # Default 8266
+#     environment:
+#       - PUID=${PUID}
+#       - PGID=${PGID}
+#       - TZ=${TIMEZONE}
+#       - UMASK_SET=002
+#       - serverIP=0.0.0.0 # Localhost loopback (or a server IP!)
+#       - serverPort=${TDARR_SERVER_PORT}
+#       - webUIPort=${TDARR_WEBUI_PORT}
+#       - internalNode=true
+#       - inContainer=true
+#       - nodeName=MyInternalNode
+#     volumes:
+#       - ${DRIVE_1}/config/tdarr/server:/app/server
+#       - ${DRIVE_1}/config/tdarr/configs:/app/configs
+#       - ${DRIVE_1}/config/tdarr/logs:/app/logs
+#       - ${DRIVE_1}/data:/data1
+#       - ${DRIVE_2}/data2:/data2
+#       - /tmp/tdarr_transcode_cache:/temp # put this on an SSD, not your storage though
+#     devices:
+#       - /dev/dri:/dev/dri
+
+# # tdarr-node required. Tdarr container calls this sucker
+#   tdarr-node:
+#     container_name: tdarr-node
+#     image: ghcr.io/haveagitgat/tdarr_node:latest
+#     restart: unless-stopped
+#     network_mode: service:tdarr
+#     environment:
+#       - PUID=${PUID}
+#       - PGID=${PGID}
+#       - TZ=${TIMEZONE}
+#       - UMASK_SET=002
+#       - nodeName=MyExternalNode
+#       - serverIP=0.0.0.0 # Localhost loopback (or client IP!)
+#       - serverPort=${TDARR_SERVER_PORT} # Default 8266
+#       - inContainer=true
+#     volumes:
+#       - ${DRIVE_1}/config/tdarr/configs:/app/configs
+#       - ${DRIVE_1}/config/tdarr/logs:/app/logs
+#       - ${DRIVE_1}/data:/data1
+#       - ${DRIVE_2}/data2:/data2
+#       - /tmp/tdarr_transcode_cache:/temp # put this on an SSD/thumb, not your storage though
+#     devices:
+#       - /dev/dri:/dev/dri
 
 # Network Wide Ad Blocking
 #  pihole:
@@ -318,5 +377,61 @@ services:
 #      TZ: ${TIMEZONE}
 #      WEBPASSWORD: ${PIHOLE_PW}
 #    volumes:
-#      - ${ROOT_DIR}/config/pihole/etc-pihole:/etc/pihole
-#      - ${ROOT_DIR}/config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+#      - ${DRIVE_1}/config/pihole/etc-pihole:/etc/pihole
+#      - ${DRIVE_1}/config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+
+# Netword Wide Ad Blocking Alternative
+# https://github.com/AdguardTeam/AdGuardHome/issues/4283
+# sudo mkdir /etc/systemd/resolved.conf.d
+# cd /etc/systemd/resolved.conf.d
+# sudo vim adguardhome.conf
+# sudo mv /etc/resolv.conf /etc/resolv.conf.backup
+# sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+# systemctl reload-or-restart systemd-resolved
+
+# The adguardhome.conf file contains:
+# [Resolve]
+# DNS=127.0.0.1
+# DNSStubListener=no
+
+# finally, go to <ip>:3000 for setup.
+  # adguardhome:
+  #     container_name: adguardhome
+  #     image: adguard/adguardhome
+  #     restart: unless-stopped
+  #     volumes:
+  #         - ${DRIVE_1}/config/adguardhome/work:/opt/adguardhome/work\
+  #         - ${DRIVE_1}/config/adguardhome/config:/opt/adguardhome/conf\
+  #     ports:
+  #         - 53:53/tcp
+  #         - 53:53/udp
+  #         - 67:67/udp
+  #         - 68:68/udp
+  #         - 80:80/tcp
+  #         - 443:443/tcp
+  #         - 443:443/udp
+  #         - 3000:3000/tcp
+  #         - 853:853/tcp
+  #         - 853:853/udp
+  #         - 5443:5443/tcp
+  #         - 5443:5443/udp
+  #         - 6060:6060/tcp
+
+
+# Home Automation (no more google/alexa!)
+  # homeassistant:
+  #   container_name: homeassistant
+  #   image: "ghcr.io/home-assistant/home-assistant:stable"
+  #   volumes:
+  #     - ${DRIVE_1}/config/home_assistant:/config # config dir
+  #     - /etc/localtime:/etc/localtime:ro # time
+  #     - /run/dbus:/run/dbus:ro # bluetooth
+  #   restart: unless-stopped
+  #   privileged: true
+  #   # for network, use host, otherwise, use ports. 
+  #   # If host mode, open firewall up, aka: sudo ufw allow 8123
+  #   network_mode: host
+  #   # ports:
+  #   #   - ${HOMEASSISTANT_PORT}:${HOMEASSISTANT_PORT} # Default 8123
+  #   environment:
+  #     - TZ=${TIMEZONE}
