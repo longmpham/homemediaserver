@@ -41,8 +41,8 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - WEBUI_PORT=${QBT_WEB_PORT}
-      - TORRENTING_PORT=${QBT_TORRENTING_PORT}
+      - WEBUI_PORT=${QBT_WEB_PORT} # Default 8080
+      - TORRENTING_PORT=${QBT_TORRENTING_PORT} # Default 6881
       - UMASK=002
     volumes:
       - ${DRIVE_1}/config/qbt:/config
