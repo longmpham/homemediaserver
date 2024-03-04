@@ -21,9 +21,10 @@ PUID=1000
 PGID=1000
 
 # Drive Location(s)
-DRIVE_1=drive_1_location
-DRIVE_2=drive_2_location
-DRIVE_3=drive_3_location
+DRIVEPOOL=/mnt/drivepool # your drivepool location
+# DRIVE_1=drive_1_location
+# DRIVE_2=drive_2_location
+# DRIVE_3=drive_3_location
 
 # Additional Configuration(s)
 SUBNET=192.168.1.0/24 # or your own subnet
@@ -51,4 +52,4 @@ PROWLARR_PORT=9696
 STASH_PORT=9999
 EOF
 # Display a message
-echo "The .env file has been created in $destination_dir. Please make sure to fill in the TIMEZONE, PLEX_CLAIM_ID, VPN_TOKEN, DRIVE_#s, and other necessary items. The _PORTS should be unchanged if using the docker-compose.yml file"
+echo "The .env file has been created in $destination_dir.\nPlease make sure to fill in the TIMEZONE, PLEX_CLAIM_ID, VPN_TOKEN, DRIVE_#s,\nand other necessary items. The _PORTS should be \nunchanged if using the docker-compose.yml file"

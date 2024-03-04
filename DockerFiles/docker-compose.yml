@@ -45,17 +45,17 @@ services:
       - TORRENTING_PORT=${QBT_TORRENTING_PORT} # Default 6881
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/qbt:/config
+      - ${DRIVEPOOL}/config/qbt:/config
 
       # Location to put downloads in
-      - ${DRIVE_2}/data2/downloads:/downloads
-      - ${DRIVE_2}/data2/downloads/downloading:/downloads
-      - ${DRIVE_2}/data2/downloads/torrent_files:/torrent_files
+      - ${DRIVEPOOL}/data2/downloads:/downloads
+      - ${DRIVEPOOL}/data2/downloads/downloading:/downloads
+      - ${DRIVEPOOL}/data2/downloads/torrent_files:/torrent_files
       # For manual moving... requires a reference below
-      - ${DRIVE_1}/data/media/movies:/movies
-      - ${DRIVE_1}/data/media/tvshows:/tvshows
-      - ${DRIVE_2}/data2/media/movies2:/movies2
-      - ${DRIVE_2}/data2/media/tvshows2:/tvshows2
+      - ${DRIVEPOOL}/data/media/movies:/movies
+      - ${DRIVEPOOL}/data/media/tvshows:/tvshows
+      # - ${DRIVE_2}/data2/media/movies2:/movies2
+      # - ${DRIVE_2}/data2/media/tvshows2:/tvshows2
 
   # NZB Client
   # Apparently no VPN is required, since its all SSL encrpyted...
@@ -68,9 +68,9 @@ services:
   #     - PGID=${PGID}
   #     - TZ=${TIMEZONE}
   #   volumes:
-  #     - ${DRIVE_1}/config/sabnzbd:/config
-  #     - ${DRIVE_1}/data/downloads:/downloads
-  #     - ${DRIVE_1}/data/downloads/incomplete:/downloads/incomplete
+  #     - ${DRIVEPOOL}/config/sabnzbd:/config
+  #     - ${DRIVEPOOL}/data/downloads:/downloads
+  #     - ${DRIVEPOOL}/data/downloads/incomplete:/downloads/incomplete
   #   ports:
   #     - ${NZB_CLIENT_PORT}:${NZB_CLIENT_PORT}
 
@@ -88,7 +88,7 @@ services:
     ports:
       - ${PROWLARR_PORT}:${PROWLARR_PORT} # 9696
     volumes:
-      - ${DRIVE_1}/config/prowlarr:/config
+      - ${DRIVEPOOL}/config/prowlarr:/config
 
   # Movies
   radarr:
@@ -102,9 +102,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/radarr:/config
-      - ${DRIVE_1}/data:/data # drive 1
-      - ${DRIVE_2}/data2:/data2 # drive 2
+      - ${DRIVEPOOL}/config/radarr:/config
+      - ${DRIVEPOOL}/data:/data # drive 1
+      # - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - ${RADARR_PORT}:${RADARR_PORT} # Default 7878
 
@@ -120,9 +120,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/sonarr:/config
-      - ${DRIVE_1}/data:/data # drive 1
-      - ${DRIVE_2}/data2:/data2 # drive 2
+      - ${DRIVEPOOL}/config/sonarr:/config
+      - ${DRIVEPOOL}/data:/data # drive 1
+      # - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - ${SONARR_PORT}:${SONARR_PORT} # Default 8989
 
@@ -138,9 +138,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/lidarr:/config
-      - ${DRIVE_1}/data:/data # drive 1
-      - ${DRIVE_2}/data2:/data2 # drive 2
+      - ${DRIVEPOOL}/config/lidarr:/config
+      - ${DRIVEPOOL}/data:/data # drive 1
+      # - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - ${LIDARR_PORT}:${LIDARR_PORT} # Default 8686
 
@@ -156,9 +156,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/readarr:/config
-      - ${DRIVE_1}/data:/data # drive 1
-      - ${DRIVE_2}/data2:/data2 # drive 2
+      - ${DRIVEPOOL}/config/readarr:/config
+      - ${DRIVEPOOL}/data:/data # drive 1
+      # - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - ${READARR_PORT}:${READARR_PORT} # Default 8787
 
@@ -174,9 +174,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/bazarr:/config
-      - ${DRIVE_1}/data:/data # drive 1
-      - ${DRIVE_2}/data2:/data2 # drive 2
+      - ${DRIVEPOOL}/config/bazarr:/config
+      - ${DRIVEPOOL}/data:/data # drive 1
+      # - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - ${BAZARR_PORT}:${BAZARR_PORT} # Default 6767
 
@@ -191,9 +191,9 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/overseerr:/config
-      - ${DRIVE_1}/data:/data # drive 1
-      - ${DRIVE_2}/data2:/data2 # drive 2
+      - ${DRIVEPOOL}/config/overseerr:/config
+      - ${DRIVEPOOL}/data:/data # drive 1
+      # - ${DRIVE_2}/data2:/data2 # drive 2
     ports:
       - ${OVERSEERR_PORT}:${OVERSEERR_PORT} # Default 5055
 
@@ -208,7 +208,7 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/requestrr:/config
+      - ${DRIVEPOOL}/config/requestrr:/config
     ports:
       - ${REQUESTRR_PORT}:${REQUESTRR_PORT} # Default 4545
 
@@ -224,14 +224,14 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/jellyfin:/config
-      - ${DRIVE_1}/config/jellyfin/cache:/cache
-      - ${DRIVE_1}/data:/data
-      - ${DRIVE_1}/data/media/movies:/movies
-      - ${DRIVE_1}/data/media/tvshows/:/tvshows
-      - ${DRIVE_1}/data/media/anime:/anime
-      - ${DRIVE_1}/data/media/music:/music
-      - ${DRIVE_1}/data/media/books:/books
+      - ${DRIVEPOOL}/config/jellyfin:/config
+      - ${DRIVEPOOL}/config/jellyfin/cache:/cache
+      - ${DRIVEPOOL}/data:/data
+      - ${DRIVEPOOL}/data/media/movies:/movies
+      - ${DRIVEPOOL}/data/media/tvshows/:/tvshows
+      - ${DRIVEPOOL}/data/media/anime:/anime
+      - ${DRIVEPOOL}/data/media/music:/music
+      - ${DRIVEPOOL}/data/media/books:/books
     ports:
       - ${JELLYFIN_PORT}:${JELLYFIN_PORT} # Default 8096
     devices:
@@ -250,23 +250,23 @@ services:
       - PLEX_CLAIM=${PLEX_CLAIM_ID}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/plex:/config
-#      - ${DRIVE_1}/config/plex/transcode:/transcode # don't use this, it's slower
+      - ${DRIVEPOOL}/config/plex:/config
+#      - ${DRIVEPOOL}/config/plex/transcode:/transcode # don't use this, it's slower
       - /tmp/transcode:/transcode # use local drive not HDD/External drives!
       # Drive 1
-      - ${DRIVE_1}/data:/data
-      - ${DRIVE_1}/data/media/movies:/movies
-      - ${DRIVE_1}/data/media/tvshows:/tvshows
-      - ${DRIVE_1}/data/media/anime:/anime
-      - ${DRIVE_1}/data/media/music:/music
-      - ${DRIVE_1}/data/media/books:/books
+      - ${DRIVEPOOL}/data:/data
+      - ${DRIVEPOOL}/data/media/movies:/movies
+      - ${DRIVEPOOL}/data/media/tvshows:/tvshows
+      - ${DRIVEPOOL}/data/media/anime:/anime
+      - ${DRIVEPOOL}/data/media/music:/music
+      - ${DRIVEPOOL}/data/media/books:/books
       # Drive 2
-      - ${DRIVE_2}/data2:/data2
-      - ${DRIVE_2}/data2/media/movies2:/movies2
-      - ${DRIVE_2}/data2/media/tvshows2:/tvshows2
-      - ${DRIVE_2}/data2/media/anime2:/anime2
-      - ${DRIVE_2}/data2/media/music2:/music2
-      - ${DRIVE_2}/data2/media/books2:/books2
+      # - ${DRIVE_2}/data2:/data2
+      # - ${DRIVE_2}/data2/media/movies2:/movies2
+      # - ${DRIVE_2}/data2/media/tvshows2:/tvshows2
+      # - ${DRIVE_2}/data2/media/anime2:/anime2
+      # - ${DRIVE_2}/data2/media/music2:/music2
+      # - ${DRIVE_2}/data2/media/books2:/books2
     devices:
       - /dev/dri:/dev/dri
 
@@ -281,7 +281,7 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${DRIVE_1}/config/tautulli:/config
+      - ${DRIVEPOOL}/config/tautulli:/config
     ports:
       - ${TAUTULLI_PORT}:${TAUTULLI_PORT} # Default 8181
 
@@ -305,7 +305,7 @@ services:
     ports:
       - ${PORTAINER_PORT}:${PORTAINER_PORT} # Default 9443
     volumes:
-      - ${DRIVE_1}/config/portainer_data:/data
+      - ${DRIVEPOOL}/config/portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 
@@ -330,11 +330,11 @@ services:
 #       - inContainer=true
 #       - nodeName=MyInternalNode
 #     volumes:
-#       - ${DRIVE_1}/config/tdarr/server:/app/server
-#       - ${DRIVE_1}/config/tdarr/configs:/app/configs
-#       - ${DRIVE_1}/config/tdarr/logs:/app/logs
-#       - ${DRIVE_1}/data:/data1
-#       - ${DRIVE_2}/data2:/data2
+#       - ${DRIVEPOOL}/config/tdarr/server:/app/server
+#       - ${DRIVEPOOL}/config/tdarr/configs:/app/configs
+#       - ${DRIVEPOOL}/config/tdarr/logs:/app/logs
+#       - ${DRIVEPOOL}/data:/data1
+      # - ${DRIVE_2}/data2:/data2
 #       - /tmp/tdarr_transcode_cache:/temp # put this on an SSD, not your storage though
 #     devices:
 #       - /dev/dri:/dev/dri
@@ -355,9 +355,9 @@ services:
 #       - serverPort=${TDARR_SERVER_PORT} # Default 8266
 #       - inContainer=true
 #     volumes:
-#       - ${DRIVE_1}/config/tdarr/configs:/app/configs
-#       - ${DRIVE_1}/config/tdarr/logs:/app/logs
-#       - ${DRIVE_1}/data:/data1
+#       - ${DRIVEPOOL}/config/tdarr/configs:/app/configs
+#       - ${DRIVEPOOL}/config/tdarr/logs:/app/logs
+#       - ${DRIVEPOOL}/data:/data1
 #       - ${DRIVE_2}/data2:/data2
 #       - /tmp/tdarr_transcode_cache:/temp # put this on an SSD/thumb, not your storage though
 #     devices:
@@ -372,13 +372,13 @@ services:
 ##    ports:
 ##      - 53:53/tcp
 ##      - 53:53/udp
-##      - 8001:80/tcp
+##      - 8000:80/tcp
 #    environment:
 #      TZ: ${TIMEZONE}
 #      WEBPASSWORD: ${PIHOLE_PW}
 #    volumes:
-#      - ${DRIVE_1}/config/pihole/etc-pihole:/etc/pihole
-#      - ${DRIVE_1}/config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+#      - ${DRIVEPOOL}/config/pihole/etc-pihole:/etc/pihole
+#      - ${DRIVEPOOL}/config/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
 
 # Netword Wide Ad Blocking Alternative
 # https://github.com/AdguardTeam/AdGuardHome/issues/4283
@@ -400,8 +400,8 @@ services:
   #     image: adguard/adguardhome
   #     restart: unless-stopped
   #     volumes:
-  #         - ${DRIVE_1}/config/adguardhome/work:/opt/adguardhome/work\
-  #         - ${DRIVE_1}/config/adguardhome/config:/opt/adguardhome/conf\
+  #         - ${DRIVEPOOL}/config/adguardhome/work:/opt/adguardhome/work\
+  #         - ${DRIVEPOOL}/config/adguardhome/config:/opt/adguardhome/conf\
   #     ports:
   #         - 53:53/tcp
   #         - 53:53/udp
@@ -423,7 +423,7 @@ services:
   #   container_name: homeassistant
   #   image: "ghcr.io/home-assistant/home-assistant:stable"
   #   volumes:
-  #     - ${DRIVE_1}/config/home_assistant:/config # config dir
+  #     - ${DRIVEPOOL}/config/home_assistant:/config # config dir
   #     - /etc/localtime:/etc/localtime:ro # time
   #     - /run/dbus:/run/dbus:ro # bluetooth
   #   restart: unless-stopped
