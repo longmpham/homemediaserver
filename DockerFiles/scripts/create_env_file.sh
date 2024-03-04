@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the file path
-env_file="/path/to/.env"
+env_file="$HOME/Docker/config/.env"
 
 # Define the variables
 cat << EOF > "$env_file"

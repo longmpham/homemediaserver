@@ -1,55 +1,53 @@
 #!/bin/bash
 
-# Define the base directory
-base_dir="$HOME/temp"
+# Define folder names
+folders=("movies" "tvshows" "anime" "books" "music" "other")
+subfolders=("config" "data" "downloads" "media")
 
-# Create temp directory
-mkdir -p "$base_dir"
-chmod 775 "$base_dir"
+# Create root folder with permissions 775
+root_folder="$HOME/Docker"
+mkdir -p "$root_folder"
+chmod 775 "$root_folder"
 
-# Create Docker directory
-docker_dir="$base_dir/Docker"
-mkdir -p "$docker_dir"
-chmod 775 "$docker_dir"
-
-# Create config directory
-config_dir="$docker_dir/config"
-mkdir -p "$config_dir"
-chmod 775 "$config_dir"
-
-# Create data directory
-data_dir="$docker_dir/data"
-mkdir -p "$data_dir"
-chmod 775 "$data_dir"
-
-# Create downloads directory
-downloads_dir="$data_dir/downloads"
-mkdir -p "$downloads_dir"
-chmod 775 "$downloads_dir"
-
-# Create downloading directory inside downloads
-downloading_dir="$downloads_dir/downloading"
-mkdir -p "$downloading_dir"
-chmod 775 "$downloading_dir"
-
-# Create media directory inside data
-media_dir="$data_dir/media"
-mkdir -p "$media_dir"
-chmod 775 "$media_dir"
-
-# Create subdirectories inside media
-subdirs=("movies" "tvshows" "anime" "books" "music" "other")
-for subdir in "${subdirs[@]}"; do
-    subdir_path="$media_dir/$subdir"
-    mkdir -p "$subdir_path"
-    chmod 775 "$subdir_path"
+# Create subfolders with permissions 775
+for subfolder in "${subfolders[@]}"; do
+    mkdir -p "$root_folder/$subfolder"
+    chmod 775 "$root_folder/$subfolder"
 done
 
-# Create subdirectories inside downloads
-subdirs=("movies" "tvshows" "anime" "books" "music" "other")
-for subdir in "${subdirs[@]}"; do
-    subdir_path="$downloads_dir/$subdir"
-    mkdir -p "$subdir_path"
-    chmod 775 "$subdir_path"
+# Create folders inside downloads with permissions 775
+for folder in "${folders[@]}"; do
+    mkdir -p "$root_folder/data/downloads/$folder"
+    chmod 775 "$root_folder/data/downloads/$folder"
 done
 
+# Create folders inside media with permissions 775
+for folder in "${folders[@]}"; do
+    mkdir -p "$root_folder/data/media/$folder"
+    chmod 775 "$root_folder/data/media/$folder"
+done
+
+# Additionally, create the 'downloading' folder inside 'downloads' with permissions 775
+mkdir -p "$root_folder/data/downloads/downloading"
+chmod 775 "$root_folder/data/downloads/downloading"
+
+# Display the folder structure
+echo "Folder structure created successfully with permissions set to 775."
+echo "# Docker"
+echo "# ├── config"
+echo "# └── data"
+echo "#     ├── downloads"
+echo "#     │   ├── downloading"
+echo "#     │   ├── movies"
+echo "#     │   ├── tvshows"
+echo "#     │   ├── anime"
+echo "#     │   ├── books"
+echo "#     │   ├── music"
+echo "#     │   └── other"
+echo "#     └── media"
+echo "#         ├── movies"
+echo "#         ├── tvshows"
+echo "#         ├── anime"
+echo "#         ├── books"
+echo "#         ├── music"
+echo "#         └── other"
