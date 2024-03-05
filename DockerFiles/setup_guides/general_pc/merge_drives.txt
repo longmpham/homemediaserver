@@ -1,0 +1,25 @@
+To use mergefs, run the ./merge_drives.sh script. Make sure to update the drive paths and merge path!
+(doesn't work atm...
+)
+To  revert the mergefs, you'll have to unmount the merged folder
+sudo umount /mnt/merged
+
+Finally, delete the folder. This will not delete your data!
+sudo rm -r /mnt/merged
+
+
+Note for unmounting/removing folder:
+Unmounting the merged filesystem and removing the mount point (/mnt/merged in this case) 
+will not delete the data stored on the underlying drives (/mnt/drive1, /mnt/drive2, /mnt/drive3). 
+It only removes the merged view of the filesystem, effectively reverting the system to its state 
+before the merge operation.
+
+Here's what happens when you unmount and remove the mount point:
+    Unmounting the merged filesystem: The umount command detaches the merged filesystem from 
+    the specified mount point (/mnt/merged). This means that the merged filesystem is no longer 
+    accessible through that mount point, but the data on the underlying drives remains intact.
+
+    Removing the mount point: The rm -r /mnt/merged command recursively deletes the mount 
+    point directory (/mnt/merged). This removes only the directory and its contents, 
+    including the merged view of the filesystem. Again, the data on the underlying drives 
+    (/mnt/drive1, /mnt/drive2, /mnt/drive3) is not affected.
