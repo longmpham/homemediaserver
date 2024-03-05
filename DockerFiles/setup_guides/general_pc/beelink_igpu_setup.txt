@@ -9,6 +9,10 @@ What is intel-opencl-icd? intel-opencl-icd is:
     source project to converge Intel’s development efforts on OpenCL(TM) 
     compute stacks supporting the GEN graphics hardware architecture.
 
+For newer gen intel including arc, (works on 12+ for sure, untested for 11 and under)
+sudo apt-get install intel-media-driver 
+
+For older gen intel:
 sudo apt-get install intel-opencl-icd
 
 Restart.

@@ -20,4 +20,4 @@ merged_mount="/mnt/merged"
 mkdir -p "$merged_mount"
 
 # Merge the drives using mergerfs with default permissions set to 775
-mergerfs -o defaults,allow_other,use_ino,category.create=mfs "$drive1:$drive2:$drive3" "$merged_mount"
+# sudo mergerfs -o defaults,allow_other,use_ino,category.create=mfs "$drive1:$drive2:$drive3" "$merged_mount"

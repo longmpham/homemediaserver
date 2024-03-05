@@ -7,7 +7,8 @@ sudo blkid
 sudo nano /etc/fstab
 
 4. In the editor...
-<UUID>	<MOUNT_DIR>	<MOUNT_TYPE(NTFS, EXT4, etc.)>	<DEFAULTS>	<SOMETHING>	<MOUNT_POSITION>
-UUID=03ec5dd3 /media/name_of_drive nfts-3g defaults  0      0
+<MOUNT_POSITION 0 boots at boot, 1 boots after boot, 2 boots after 1
+<UUID>	<MOUNT_DIR>	<MOUNT_TYPE(NTFS, EXT4, etc.)> <DEFAULTS> <DUMP(backup)[0=no,1=yes]> <MOUNT_POSITION>
+UUID=03ec5dd3 /media/name_of_drive nfts-3g defaults 0 0
 
 5. Save and close. Restart Linux

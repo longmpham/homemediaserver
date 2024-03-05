@@ -53,3 +53,8 @@ echo "#         ├── anime"
 echo "#         ├── books"
 echo "#         ├── music"
 echo "#         └── other"
+
+
+# sudo mkdir -p Docker/{config,data/{downloads/{downloading,movies,tvshows,anime,books,music,other},media/{movies,tvshows,anime,books,music,other}}} && chmod -R 775 Docker
+echo "Alternatively, run this: mkdir -p Docker/{config,data/{downloads/{downloading,movies,tvshows,anime,books,music,other},media/{movies,tvshows,anime,books,music,other}}} && chmod -R 775 Docker
+"

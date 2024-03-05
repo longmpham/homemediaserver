@@ -1,0 +1,22 @@
+MergerFS Setup Instructions:
+1. List your drives using:
+sudo blkid
+
+2. Create your drives in and setup your partitions using fdisk, and mkfs.ext4. Repeat for n number of drives
+sudo fdisk /dev/sdd         # or your specific drive
+g                           # gpt
+n                           # partition number
+w                           # save and end
+
+3. Create directories for your drives to mount on
+sudo mkdir /media/drive1 /media/drive2 ... /media/driveN
+or
+run the following script "merge_drives.sh". Make sure to update the drive locations!
+
+4. Update your /etc/fstab
+# drivepool/mergerfs Ubuntu
+# drive locations
+UUID="a3ae16b7-5542-46d7-ab61-f010d95a8449" /media/drive1 ext4 defaults 0 0
+UUID="87f6c225-a03a-4a3f-808c-8678f0526f93" /media/drive2 ext4 defaults 0 0
+# merged drive location
+/media/drive1:/media/drive2 /media/merged fuse.mergerfs allow_other,cache.files=partial,dropcacheonclose=true,category.create=mfs,nonempty 0 0

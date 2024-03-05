@@ -23,5 +23,6 @@ uname -a
 sudo ln -s ibt-1040-4150.ddc ibt-0040-1050.ddc
 sudo ln -s ibt-1040-4150.sfi ibt-0040-1050.sfi
 13. install HW Transcoding! 
+sudo apt-get install intel-media-driver # try this one first.
 sudo apt-get install intel-opencl-icd
 14. Restart everything!
