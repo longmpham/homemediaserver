@@ -18,3 +18,17 @@ my usage:
 
 5. Check the folder!
 ls ~/windows_share
+
+6. Bonus...
+Create a windows credential file read only by root:
+sudo nano /etc/win-credentials
+username=your_username
+password=your_password
+sudo chown root: /etc/win-credentials
+sudo chmod 600 /etc/win-credentials
+
+Go back to /etc/fstab and change your username/password to credentials=/etc/win-credentials
+sudo nano /etc/fstab
+examples:
+//192.168.50.28/DrivePool /media/drivepool cifs credentials=/etc/win-credentials,uid=1000,gid=1000 0 0
+//192.168.50.236/torrent /media/torrent cifs credentials=/etc/win-credentials,uid=1000,gid=1000 0 0

@@ -1,0 +1,50 @@
+Tdarr configuration from Ubuntu as Server and Windows as Node
+
+1. Run the Tdarr docker. Make sure the Server and Node are running the same version. 
+If not, change the config file and/or the docker image
+
+image: ghcr.io/haveagitgat/tdarr:2.13.01 # windows version currently on this one.
+# image: ghcr.io/haveagitgat/tdarr:latest
+
+2. Set up your drives, or network drives such that both Server and Node can see them. 
+In Ubuntu, the path will be something like the following (local -> docker):
+/media/drivepool -> /drivepool
+
+In Windows, the path will be something like the following:
+U:/<drivepool>
+
+These paths need to be configured on the Windows side under the Tdarr_Node_Config.json file
+Tip: Configure one for your drivepool and one for your transcode cache
+...
+...  
+"pathTranslators": [
+    {
+      "server": "/drivepool",
+      "node": "U:/"
+    },
+    {
+      "server": "/temp",
+      "node": "K:/transcode"
+    }
+  ],
+...
+...
+
+What this is saying is "Map the server's path to the Windows path". Keep in mind, they are not 2 different locations
+but the same location, just named differently as Ubuntu and Windows are not using the same path conventions.
+
+3. Setup your Tdarr as you would normally. Go into your <server_ip>/<server_web_ui_port> (ie. 192.168.50.2:8265) and 
+configure your Libraries and Plugins, etc.
+
+4. If you run into permission issues, make sure to do the following when mounting (or follow the mount_*.txt files)
+To mount temporarily:
+sudo mkdir /mnt/windows_share
+sudo mount.cifs //SERVER/SHARE /mnt/windows_share -o username=your_username,password=your_password,file_mode=0775,dir_mode=0775
+
+To mount permanently in /etc/fstab (on boot):
+sudo nano /etc/fstab
+# //SERVER/SHARE /mnt/windows_share cifs username=your_username,password=your_password,file_mode=0775,dir_mode=0775 0 0
+//192.168.50.2 /mmt/windows_share cifs username=user@outlook.com,password=password123,pid=1000,gid=1000,file_mode=0775,dir_mode=0775 0 0
+sudo mount -a
+
+tip: follow the mount_windows_share_to_linux_permanently.txt as it will guide you to create a password file and keep it read only to root such that you can use this within your /etc/fstab file.
